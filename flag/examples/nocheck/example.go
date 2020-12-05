@@ -1,6 +1,6 @@
 package main
 
-import bootflag "github.com/ALiuGuanyan/uni/micro-boot/flag"
+import bootflag "github.com/ALiuGuanyan/micro-boot/flag"
 
 // CustomConfigNeedNotToCheckValidity is a custom config structure do not need to check the validity
 type CustomConfigNeedNotToCheckValidity struct {

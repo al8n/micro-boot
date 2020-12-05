@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	bootflag "github.com/ALiuGuanyan/uni/micro-boot/flag"
+	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
 	"strconv"
 )
 
