@@ -1,4 +1,4 @@
-package settings
+package grpc
 
 import (
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"

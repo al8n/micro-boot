@@ -1,4 +1,4 @@
-package settings
+package api
 
 import (
 	"errors"
@@ -137,11 +137,11 @@ func (as *APIs) Parse() (err error) {
 }
 
 type API struct {
-	Name                string                     `json:"name" yaml:"name"`
-	LogKVs              map[string]string          `json:"log" yaml:"log"`
-	Instrument          []string                   `json:"instrument" yaml:"instrument"`
-	RateLimit           RateLimit                  `json:"ratelimit" yaml:"ratelimit"`
-	Breaker             Breaker                    `json:"breaker" yaml:"breaker"`
+	Name       string            `json:"name" yaml:"name"`
+	LogKVs     map[string]string `json:"log" yaml:"log"`
+	Instrument []string          `json:"instrument" yaml:"instrument"`
+	RateLimit  RateLimit         `json:"ratelimit" yaml:"ratelimit"`
+	Breaker    Breaker           `json:"breaker" yaml:"breaker"`
 
 	// CustomBindFlagsFunc defines custom bind flags behaviour for structure, if CustomBindFlagsFunc is nil, default  bind flags behaviour will be used
 	CustomBindFlagsFunc func(fs *bootflag.FlagSet) `json:"-" yaml:"-"`

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	boot "github.com/ALiuGuanyan/micro-boot"
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
-	"github.com/ALiuGuanyan/micro-boot/settings"
+	"github.com/ALiuGuanyan/micro-boot/http"
 	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -14,7 +14,7 @@ import (
 var cfg config
 
 type config struct {
-	HTTP  settings.HTTP
+	HTTP http.HTTP
 }
 
 type server struct {

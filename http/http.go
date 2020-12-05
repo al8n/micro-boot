@@ -1,4 +1,4 @@
-package settings
+package http
 
 import (
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"

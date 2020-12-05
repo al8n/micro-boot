@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	defaultMaxStalenessUsage = "sets the maximum staleness a server is allowed"
+	defaultMaxStalenessUsage = "specify a maximum replication lag for reads from secondaries in a replica set"
 	defaultHedgeEnabledUsage = "specifies whether or not hedged reads should be enabled in the server"
-	defaultReadPrefModeUsage = "indicates the user's preference on reads"
-	defaultTagSetsUsage = "set is an ordered list of tags"
+	defaultReadPrefModeUsage = "specify the read preference mode"
+	defaultTagSetsUsage = "specify one or more read preference tags"
 )
 
 var (

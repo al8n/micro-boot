@@ -8,12 +8,10 @@ import (
 var (
 	defaultReadConcernFlagsPrefix = defaultMongoFlagsPrefix + "-read-concern"
 	defaultReadConcernLevel = ""
-
-
 )
 
 const (
-	defaultReadConcernLevelUsage = "sets the level of a read concern"
+	defaultReadConcernLevelUsage = "specifies the read concern to use for read operations"
 )
 
 func SetDefaultReadConcernFlagsPrefix(val string)  {

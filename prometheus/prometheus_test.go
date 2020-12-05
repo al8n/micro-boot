@@ -12,7 +12,7 @@ import (
 
 
 func TestConfig(t *testing.T) {
-	var yamlCases = map[string]Config {
+	var yamlCases = map[string]Config{
 		`
 path: /metrics
 counter-options:
