@@ -7,9 +7,9 @@
 [![Coverage Status][codecov-image]][codecov-url]
 [![License: MIT][license-image]][license-url]
 
-English | [简体中文](README-zh_CN.md)   
+[English](README.md) | 简体中文
 
-Framework insensitive microservices booter for Golang.
+Golang 框架不敏感的微服务启动器
 
 </div>
 
@@ -19,3 +19,4 @@ Framework insensitive microservices booter for Golang.
 [codecov-url]: https://codecov.io/gh/ALiuGuanyan/micro-boot
 [license-image]: https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square
 [license-url]: https://opensource.org/licenses/Apache-2.0
+

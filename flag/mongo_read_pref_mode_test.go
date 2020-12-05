@@ -47,3 +47,17 @@ func TestMongoReadPreferenceMode(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, getMode, readpref.PrimaryMode)
 }
+
+func TestMongoReadPreferenceModeWithDefault(t *testing.T) {
+	var mode readpref.Mode
+	f := setUpReadPreferenceModeWithDefaultNearestMode(&mode)
+
+	err := f.fs.Parse([]string{})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+
+	getMode, err := f.GetMongoReadPreferenceMode("mode")
+	assert.NoError(t, err)
+	assert.Equal(t, getMode, readpref.NearestMode)
+}
