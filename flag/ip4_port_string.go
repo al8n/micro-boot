@@ -21,22 +21,15 @@ func newIP4PortStringValue(val string, p *string) *ip4PortStringValue {
 }
 
 func (s *ip4PortStringValue) Set(val string) (err error) {
-	var(
-		p64 = new(uint64)
-		p string
-	)
-
 	value := strings.TrimSpace(val)
-	*p64, err = strconv.ParseUint(value, 10, 64)
+	p64, err := strconv.ParseUint(value, 10, 64)
 	if err != nil {
 		return errors.New(errPortString)
 	}
-	if *p64 > 65535 {
+	if p64 > 65535 {
 		return errors.New(errPortString)
 	}
-
-	p = fmt.Sprintf("%d", *p64)
-	s.value = &p
+	*s.value = value
 	return nil
 }
 

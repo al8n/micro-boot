@@ -50,7 +50,7 @@ func (s *stringToInt32Value) Set(val string) error {
 
 		val, err := strconv.ParseInt(strings.TrimSpace(kv[1]), 10, 32)
 		if err != nil {
-			return fmt.Errorf("%s cannot be parsed as float64", kv[1])
+			return fmt.Errorf("%s cannot be parsed as int32", kv[1])
 		}
 
 		out[strings.TrimSpace(kv[0])] = int32(val)
@@ -89,7 +89,7 @@ func stringToInt32ValueConv(val string) (interface{}, error) {
 	val = strings.Trim(val, "[]")
 	// An empty string would cause an empty map
 	if len(val) == 0 {
-		return map[string]float64{}, nil
+		return map[string]int32{}, nil
 	}
 	r := csv.NewReader(strings.NewReader(val))
 	ss, err := r.Read()
@@ -105,7 +105,7 @@ func stringToInt32ValueConv(val string) (interface{}, error) {
 
 		val, err := strconv.ParseInt(strings.TrimSpace(kv[1]), 10, 32)
 		if err != nil {
-			return nil, fmt.Errorf("%s cannot be parsed as float64", kv[1])
+			return nil, fmt.Errorf("%s cannot be parsed as int32", kv[1])
 		}
 		out[strings.TrimSpace(kv[0])] = int32(val)
 	}
@@ -136,9 +136,9 @@ func (f *FlagSet) StringToInt32VarP(p *map[string]int32, name, shorthand string,
 // StringToInt32 defines a string flag with specified name, default value, and usage string.
 // The return value is the address of a map[string]int32 variable that stores the value of the flag.
 // The value of each argument will not try to be separated by comma
-func (f *FlagSet) StringToInt32(name string, value map[string]float32, usage string) *map[string]float32 {
-	p := map[string]float32{}
-	f.StringToFloat32VarP(&p, name, "", value, usage)
+func (f *FlagSet) StringToInt32(name string, value map[string]int32, usage string) *map[string]int32 {
+	p := map[string]int32{}
+	f.StringToInt32VarP(&p, name, "", value, usage)
 	return &p
 }
 

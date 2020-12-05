@@ -17,7 +17,7 @@ var (
 	defaultNoopSpan = false
 	defaultSharedSpans = true
 
-	defaultTracerGenerator = idgenerator.NewRandom64()
+	defaultTracerGenerator = bootflag.Random64
 	defaultTracerTags = map[string]string{}
 	defaultTracerNoop = false
 	defaultCountingSamplerRate = 0.0
@@ -50,7 +50,7 @@ func SetDefaultTracerTags(tags map[string]string)  {
 	defaultTracerTags = tags
 }
 
-func SetDefaultTracerGenerator(generator idgenerator.IDGenerator)  {
+func SetDefaultTracerGenerator(generator bootflag.ZipkinIDGenerator)  {
 	defaultTracerGenerator = generator
 }
 

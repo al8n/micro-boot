@@ -135,7 +135,7 @@ func (s *mongoTagSetSliceValue) GetSlice() []string {
 		for j, v := range d {
 			innerOut[j] = fmt.Sprintf("%s=%s", v.Name, v.Value)
 		}
-		out[i] = "[" + strings.Join(out, " ") + "]"
+		out[i] = "[" + strings.Join(innerOut, " ") + "]"
 	}
 	return out
 }

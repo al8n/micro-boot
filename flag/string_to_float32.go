@@ -50,7 +50,7 @@ func (s *stringToFloat32Value) Set(val string) error {
 
 		val, err := strconv.ParseFloat(strings.TrimSpace(kv[1]), 32)
 		if err != nil {
-			return fmt.Errorf("%s cannot be parsed as float64", kv[1])
+			return fmt.Errorf("%s cannot be parsed as float32", kv[1])
 		}
 
 		out[strings.TrimSpace(kv[0])] = float32(val)
@@ -89,7 +89,7 @@ func stringToFloat32ValueConv(val string) (interface{}, error) {
 	val = strings.Trim(val, "[]")
 	// An empty string would cause an empty map
 	if len(val) == 0 {
-		return map[string]float64{}, nil
+		return map[string]float32{}, nil
 	}
 	r := csv.NewReader(strings.NewReader(val))
 	ss, err := r.Read()
@@ -106,7 +106,7 @@ func stringToFloat32ValueConv(val string) (interface{}, error) {
 
 		val, err := strconv.ParseFloat(strings.TrimSpace(kv[1]), 32)
 		if err != nil {
-			return nil, fmt.Errorf("%s cannot be parsed as float64", kv[1])
+			return nil, fmt.Errorf("%s cannot be parsed as float32", kv[1])
 		}
 		out[strings.TrimSpace(kv[0])] = float32(val)
 	}

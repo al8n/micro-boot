@@ -9,8 +9,8 @@ import (
 func TestHandlerErrorHandlingHTTP(t *testing.T) {
 	var p *promhttp.HandlerErrorHandling
 	f := NewFlagSet("test", ContinueOnError)
-	p = f.PrometheusHandlerErrorHandling("policy", promhttp.HTTPErrorOnError, "")
-	err := f.fs.Parse([]string{})
+	p = f.PrometheusHandlerErrorHandling("policy", promhttp.ContinueOnError, "")
+	err := f.fs.Parse([]string{"--policy=http"})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
@@ -60,4 +60,17 @@ func TestHandlerErrorHandling(t *testing.T) {
 	getP, err := f.GetPrometheusHandlerErrorHandling("policy")
 	assert.NoError(t, err)
 	assert.Equal(t, getP, p)
+}
+
+func TestHandlerErrorHandlingError(t *testing.T) {
+	var p promhttp.HandlerErrorHandling
+	f := NewFlagSet("test", ContinueOnError)
+	f.PrometheusHandlerErrorHandlingVar(&p, "policy", -6, "")
+	err := f.fs.Parse([]string{})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+
+	_, err = f.GetPrometheusHandlerErrorHandling("policy")
+	assert.Error(t, err)
 }

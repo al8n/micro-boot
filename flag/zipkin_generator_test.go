@@ -46,19 +46,28 @@ func TestEmptyZipkinGeneratorWithDefault(t *testing.T) {
 	assert.Equal(t, getG, idgenerator.NewRandomTimestamped())
 }
 
-func TestEmptyZipkinGenerator128(t *testing.T) {
+func TestZipkinGenerator64(t *testing.T) {
 	var g *idgenerator.IDGenerator
 	f := NewFlagSet("test", ContinueOnError)
 	g = f.ZipkinIDGenerator("generator", Random128, "")
-	err := f.fs.Parse([]string{})
+	err := f.fs.Parse([]string{"--generator=64"})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
 
-	getG, err := f.GetZipkinIDGenerator("generator")
-	assert.NoError(t, err)
+	assert.Equal(t, idgenerator.NewRandom64(), *g)
+}
 
-	assert.Equal(t, getG, *g)
+func TestZipkinGenerator128(t *testing.T) {
+	var g *idgenerator.IDGenerator
+	f := NewFlagSet("test", ContinueOnError)
+	g = f.ZipkinIDGenerator("generator", Random64, "")
+	err := f.fs.Parse([]string{"--generator=128"})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+
+	assert.Equal(t, idgenerator.NewRandom128(), *g)
 }
 
 func TestZipkinGeneratorTimeStamped(t *testing.T) {
@@ -74,4 +83,24 @@ func TestZipkinGeneratorTimeStamped(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, getG, *g)
+}
+
+func TestZipkinGeneratorSetError(t *testing.T) {
+	f := NewFlagSet("test", ContinueOnError)
+	f.ZipkinIDGenerator("generator", Random64, "")
+	err := f.fs.Parse([]string{"--generator=error"})
+	assert.Error(t, err)
+}
+
+func TestZipkinGeneratorError(t *testing.T) {
+	f := NewFlagSet("test", ContinueOnError)
+	f.ZipkinIDGenerator("generator", -2, "")
+	err := f.fs.Parse([]string{})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+
+	getG, err := f.GetZipkinIDGenerator("generator")
+	assert.NoError(t, err)
+	assert.Equal(t, getG, idgenerator.NewRandom64())
 }

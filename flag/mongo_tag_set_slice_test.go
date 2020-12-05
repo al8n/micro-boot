@@ -210,8 +210,9 @@ func TestMongoTagSetSAsSliceValue(t *testing.T) {
 }
 
 func TestMongoTagSetSCalledTwice(t *testing.T) {
-	var mtss []tag.Set
-	f := setUpMongoTagSetSFlagSet(&mtss)
+	var mtss *[]tag.Set
+	f := NewFlagSet("test", ContinueOnError)
+	mtss = f.MongoTagSetSliceP( "mtss", "m", []tag.Set{}, "Command separated list!")
 
 	in := []string{"[n7=v7 n9=v9],[n1=v1 n2=v2]", "[n3=v3]"}
 	expected := []tag.Set{
@@ -249,7 +250,7 @@ func TestMongoTagSetSCalledTwice(t *testing.T) {
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
-	for i, v := range mtss {
+	for i, v := range *mtss {
 		if !assert.Equal(t, expected[i], v ) {
 			t.Fatalf("expected mtss[%d] to be %v but got: %v", i, expected[i], v)
 		}
@@ -257,8 +258,9 @@ func TestMongoTagSetSCalledTwice(t *testing.T) {
 }
 
 func TestMongoTagSetSAppend(t *testing.T)  {
-	var mtss []tag.Set
-	f := setUpMongoTagSetSFlagSet(&mtss)
+	var mtss *[]tag.Set
+	f := NewFlagSet("test", ContinueOnError)
+	mtss = f.MongoTagSetSlice( "mtss", []tag.Set{}, "Command separated list!")
 
 	in := []string{"[n1=v1 n2=v2 n3=v3]", "[n4=v4 n5=v5 n6=v6]"}
 	argfmt := "--mtss=%s"
@@ -274,7 +276,7 @@ func TestMongoTagSetSAppend(t *testing.T)  {
 			_ = val.Append("[n7=v7 n9=v9], [n10=v10 n11=v11]")
 		}
 	})
-	if len(mtss) != 4 || !assert.Equal(t, mtss, []tag.Set{
+	if len(*mtss) != 4 || !assert.Equal(t, *mtss, []tag.Set{
 		{
 			{
 				Name: "n1",
@@ -326,4 +328,29 @@ func TestMongoTagSetSAppend(t *testing.T)  {
 	}) {
 		t.Fatalf("Expected ss to be append: '[n1=v1,n2=v2,n3=v3 n4=v4,n5=v5,n6=v6 n7=v7,n9=v9 n10=v10,n11=v11]', but got: %v", mtss)
 	}
+}
+
+func TestMongoTagSetSGetSlice(t *testing.T)  {
+	var mtss []tag.Set
+	f := NewFlagSet("test", ContinueOnError)
+	f.MongoTagSetSliceVarP(&mtss, "mtss", "m", []tag.Set{}, "Command separated list!")
+
+	in := []string{"[n1=v1 n2=v2 n3=v3]", "[n4=v4 n5=v5 n6=v6]"}
+	argfmt := "--mtss=%s"
+	arg1 := fmt.Sprintf(argfmt, in[0])
+	arg2 := fmt.Sprintf(argfmt, in[1])
+	err := f.fs.Parse([]string{arg1, arg2})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+
+	f.fs.VisitAll(func(f *pflag.Flag) {
+		if val, ok := f.Value.(pflag.SliceValue); ok {
+			slice := val.GetSlice()
+			assert.Equal(t, []string{
+				"[n1=v1 n2=v2 n3=v3]",
+				"[n4=v4 n5=v5 n6=v6]",
+			}, slice)
+		}
+	})
 }

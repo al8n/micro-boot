@@ -9,8 +9,8 @@ import (
 func TestZipkinExtractFailurePolicyRestart(t *testing.T) {
 	var p *zipkin.ExtractFailurePolicy
 	f := NewFlagSet("test", ContinueOnError)
-	p = f.ZipkinExtractFailurePolicy("policy", zipkin.ExtractFailurePolicyRestart, "")
-	err := f.fs.Parse([]string{})
+	p = f.ZipkinExtractFailurePolicy("policy", zipkin.ExtractFailurePolicyTagAndRestart, "")
+	err := f.fs.Parse([]string{"--policy=restart"})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
@@ -23,8 +23,8 @@ func TestZipkinExtractFailurePolicyRestart(t *testing.T) {
 func TestZipkinExtractFailurePolicyOnError(t *testing.T) {
 	var p *zipkin.ExtractFailurePolicy
 	f := NewFlagSet("test", ContinueOnError)
-	p = f.ZipkinExtractFailurePolicyP("policy", "p", zipkin.ExtractFailurePolicyError, "")
-	err := f.fs.Parse([]string{})
+	p = f.ZipkinExtractFailurePolicyP("policy", "p", zipkin.ExtractFailurePolicyTagAndRestart, "")
+	err := f.fs.Parse([]string{"--policy=error"})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
@@ -61,3 +61,16 @@ func TestZipkinExtractFailurePolicy(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, getP, p)
 }
+
+func TestZipkinExtractFailurePolicyError(t *testing.T)  {
+	var p zipkin.ExtractFailurePolicy
+	f := NewFlagSet("test", ContinueOnError)
+	f.ZipkinExtractFailurePolicyVarP(&p, "policy", "p", -5, "")
+	err := f.fs.Parse([]string{})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+	_, err = f.GetZipkinExtractFailurePolicy("policy")
+	assert.Error(t, err)
+}
+

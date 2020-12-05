@@ -65,7 +65,7 @@ func handlerErrorHandlingConv(val string) (interface{}, error) {
 func (f *FlagSet) GetPrometheusHandlerErrorHandling(name string) (promhttp.HandlerErrorHandling, error) {
 	val, err := f.getFlagType(name, "prometheusHandlerErrorHandling", handlerErrorHandlingConv)
 	if err != nil {
-		return 0, err
+		return -1, err
 	}
 	return val.(promhttp.HandlerErrorHandling), nil
 }

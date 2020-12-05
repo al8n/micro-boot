@@ -31,10 +31,11 @@ func (e extractFailurePolicyValue) String() (result string) {
 func (e *extractFailurePolicyValue) Set(val string) (err error)  {
 	value := strings.ToLower(dashBlankReplacer.Replace(val))
 	if strings.Contains(value, "tag") {
-		if !strings.Contains(value, "restart") {
-			*e.value = zipkin.ExtractFailurePolicyTagAndRestart
-			return nil
-		}
+		*e.value = zipkin.ExtractFailurePolicyTagAndRestart
+		return nil
+	}
+
+	if strings.Contains(value, "restart") {
 		*e.value = zipkin.ExtractFailurePolicyRestart
 		return nil
 	}

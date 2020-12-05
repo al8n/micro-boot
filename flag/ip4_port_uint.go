@@ -22,21 +22,19 @@ func newIP4PortUintValue(val uint, p *uint) *ip4PortUintValue {
 
 func (s *ip4PortUintValue) Set(val string) (err error) {
 	var(
-		p64 *uint64 = new(uint64)
-		p uint
+		p64 uint64
 	)
 
 	value := strings.TrimSpace(val)
-	*p64, err = strconv.ParseUint(value, 10, 64)
+	p64, err = strconv.ParseUint(value, 10, 64)
 	if err != nil {
 		return errors.New(errPortUint)
 	}
-	if *p64 > 65535 {
+	if p64 > 65535 {
 		return errors.New(errPortUint)
 	}
 
-	p = uint(*p64)
-	s.value = &p
+	*s.value = uint(p64)
 	return nil
 }
 
