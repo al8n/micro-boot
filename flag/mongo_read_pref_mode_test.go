@@ -61,3 +61,57 @@ func TestMongoReadPreferenceModeWithDefault(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, getMode, readpref.NearestMode)
 }
+
+func TestMongoReadPreferenceModePrimaryPreferred(t *testing.T) {
+	var mode *readpref.Mode
+	f := NewFlagSet("test", ContinueOnError)
+	mode = f.MongoReadPreferenceMode("mode", readpref.PrimaryPreferredMode, "")
+
+	err := f.fs.Parse([]string{})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+
+	getMode, err := f.GetMongoReadPreferenceMode("mode")
+	assert.NoError(t, err)
+	assert.Equal(t, getMode, *mode)
+}
+
+func TestMongoReadPreferenceModeSecondary(t *testing.T) {
+	var mode *readpref.Mode
+	f := NewFlagSet("test", ContinueOnError)
+	mode = f.MongoReadPreferenceModeP("mode", "m", readpref.PrimaryPreferredMode, "")
+
+	err := f.fs.Parse([]string{"-m secondary"})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+
+	getMode, err := f.GetMongoReadPreferenceMode("mode")
+	assert.NoError(t, err)
+	assert.Equal(t, getMode, *mode)
+}
+
+func TestMongoReadPreferenceModeSecondaryPreferredMode(t *testing.T) {
+	var mode *readpref.Mode
+	f := NewFlagSet("test", ContinueOnError)
+	mode = f.MongoReadPreferenceModeP("mode", "m", readpref.PrimaryPreferredMode, "")
+
+	err := f.fs.Parse([]string{"-m secondary-preferred"})
+	if err != nil {
+		t.Fatal("expected no error; got", err)
+	}
+
+	getMode, err := f.GetMongoReadPreferenceMode("mode")
+	assert.NoError(t, err)
+	assert.Equal(t, getMode, *mode)
+}
+
+func TestMongoReadPreferenceModeErrorMode(t *testing.T)  {
+	var mode readpref.Mode
+	f := NewFlagSet("test", ContinueOnError)
+	f.MongoReadPreferenceModeVarP(&mode,"mode", "m", readpref.PrimaryPreferredMode, "")
+
+	err := f.fs.Parse([]string{"-m error"})
+	assert.Error(t, err)
+}

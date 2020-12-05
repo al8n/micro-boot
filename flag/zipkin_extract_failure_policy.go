@@ -25,40 +25,38 @@ func (e extractFailurePolicyValue) Type() string {
 }
 
 func (e extractFailurePolicyValue) String() (result string) {
-	var policy = map[zipkin.ExtractFailurePolicy]string{
-		zipkin.ExtractFailurePolicyRestart: "ExtractFailurePolicyRestart",
-		zipkin.ExtractFailurePolicyError: "ExtractFailurePolicyError",
-		zipkin.ExtractFailurePolicyTagAndRestart: "ExtractFailurePolicyTagAndRestart",
-	}
-	return fmt.Sprintf("error handling policy: %s", policy[*e.value])
+	return fmt.Sprintf("%d", *e.value)
 }
 
 func (e *extractFailurePolicyValue) Set(val string) (err error)  {
 	value := strings.ToLower(dashBlankReplacer.Replace(val))
-	if strings.Contains(value, "restart") && !strings.Contains(value, "tag") {
-		*e.value = 0
+	if strings.Contains(value, "tag") {
+		if !strings.Contains(value, "restart") {
+			*e.value = zipkin.ExtractFailurePolicyTagAndRestart
+			return nil
+		}
+		*e.value = zipkin.ExtractFailurePolicyRestart
 		return nil
-	} else if strings.Contains(value, "error") {
-		*e.value = 1
-		return nil
-	} else if strings.Contains(value, "restart") && strings.Contains(value, "tag") {
-		*e.value = 2
-		return nil
-	} else {
-		return errors.New("unsupported extract failure policy")
 	}
+
+	if strings.Contains(value, "error") {
+		*e.value = zipkin.ExtractFailurePolicyError
+		return nil
+	}
+
+	return errors.New("unsupported extract failure policy")
 }
 
 func extractFailurePolicyConv(val string) (interface{}, error) {
-	value := strings.ToLower(dashBlankReplacer.Replace(val))
-	if strings.Contains(value, "restart") && !strings.Contains(value, "tag") {
+	switch val {
+	case "0":
 		return zipkin.ExtractFailurePolicyRestart, nil
-	} else if strings.Contains(value, "error") {
+	case "1":
 		return zipkin.ExtractFailurePolicyError, nil
-	} else if strings.Contains(value, "restart") && strings.Contains(value, "tag") {
+	case "2":
 		return zipkin.ExtractFailurePolicyTagAndRestart, nil
-	} else {
-		return nil, fmt.Errorf("%s: %s", errExtractFailurePolicyStr, val)
+	default:
+		return -1, fmt.Errorf(errExtractFailurePolicyStr)
 	}
 }
 
@@ -66,7 +64,7 @@ func extractFailurePolicyConv(val string) (interface{}, error) {
 func (f *FlagSet) GetZipkinExtractFailurePolicy(name string) (zipkin.ExtractFailurePolicy, error) {
 	val, err := f.getFlagType(name, "zipkinExtractFailurePolicy", extractFailurePolicyConv)
 	if err != nil {
-		return 0, err
+		return -1, err
 	}
 	return val.(zipkin.ExtractFailurePolicy), nil
 }

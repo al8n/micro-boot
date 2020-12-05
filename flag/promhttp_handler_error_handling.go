@@ -25,12 +25,7 @@ func (heh handlerErrorHandlingValue) Type() string {
 }
 
 func (heh handlerErrorHandlingValue) String() (result string) {
-	var policy = map[promhttp.HandlerErrorHandling]string{
-		promhttp.HTTPErrorOnError: "HTTPErrorOnError",
-		promhttp.ContinueOnError: "ContinueOnError",
-		promhttp.PanicOnError: "PanicOnError",
-	}
-	return fmt.Sprintf("error handling policy: %s", policy[*heh.value])
+	return fmt.Sprintf("%d", *heh.value)
 }
 
 func (heh *handlerErrorHandlingValue) Set(val string) (err error)  {
@@ -38,27 +33,31 @@ func (heh *handlerErrorHandlingValue) Set(val string) (err error)  {
 	if strings.Contains(value, "http") || strings.Contains(value, "erroronerror") {
 		*heh.value = 0
 		return nil
-	} else if strings.Contains(value, "continue") {
+	}
+
+	if strings.Contains(value, "continue") {
 		*heh.value = 1
 		return nil
-	} else if strings.Contains(value, "panic") {
+	}
+
+	if strings.Contains(value, "panic") {
 		*heh.value = 2
 		return nil
-	} else {
-		return errors.New("unsupported error handling policy")
 	}
+
+	return errors.New("unsupported error handling policy")
 }
 
 func handlerErrorHandlingConv(val string) (interface{}, error) {
-	value := strings.ToLower(dashBlankReplacer.Replace(val))
-	if strings.Contains(value, "http") || strings.Contains(value, "erroronerror") {
+	switch val {
+	case "0":
 		return promhttp.HTTPErrorOnError, nil
-	} else if strings.Contains(value, "continue") {
+	case "1":
 		return promhttp.ContinueOnError, nil
-	} else if strings.Contains(value, "panic") {
+	case "2":
 		return promhttp.PanicOnError, nil
-	} else {
-		return nil, fmt.Errorf("%s: %s", errHandlerErrorHandlingStr, val)
+	default:
+		return -1, fmt.Errorf("%s: %s", errHandlerErrorHandlingStr, val)
 	}
 } 
 

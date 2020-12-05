@@ -17,5 +17,5 @@ Framework insensitive microservices booter for Golang.
 [test-image]: https://github.com/ALiuGuanyan/micro-boot/workflows/test/badge.svg?branch=main
 [codecov-image]: https://img.shields.io/codecov/c/gh/ALiuGuanyan/micro-boot?style=flat-square&token=RWGEEFX7SN&logo=codecov
 [codecov-url]: https://codecov.io/gh/ALiuGuanyan/micro-boot
-[license-image]: https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square
+[license-image]: https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=flat-square
 [license-url]: https://opensource.org/licenses/Apache-2.0

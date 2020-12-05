@@ -7,42 +7,52 @@ import (
 	"strings"
 )
 
-type generator int
+type ZipkinIDGenerator int
 
 const (
-	Random64 generator = iota
+	Random64 ZipkinIDGenerator = iota
 	Random128
 	RandomTimestamped
 )
 
-const errGeneratorStr = "invalid string being converted to idgenerator.IDGenerator"
+const errZipkinZipkinIDGeneratorStr = "invalid string being converted to idgenerator.IDGenerator"
 
-type extractGeneratorValue struct {
+type extractZipkinIDGeneratorValue struct {
 	value *idgenerator.IDGenerator
-	typ *generator
+	typ *ZipkinIDGenerator
 }
 
-func newZipkinGeneratorValue(val idgenerator.IDGenerator, p *idgenerator.IDGenerator) *extractGeneratorValue {
-	ssv := new(extractGeneratorValue)
+func mapZipkinIDGenerator(val ZipkinIDGenerator)	(typ ZipkinIDGenerator, value idgenerator.IDGenerator) {
+	switch val {
+	case Random64:
+		return val, idgenerator.NewRandom64()
+	case Random128:
+		return val, idgenerator.NewRandom128()
+	case RandomTimestamped:
+		return val, idgenerator.NewRandomTimestamped()
+	default:
+		return Random64, idgenerator.NewRandom64()
+	}
+}
+
+func newZipkinZipkinIDGeneratorValue(val ZipkinIDGenerator, p *idgenerator.IDGenerator) *extractZipkinIDGeneratorValue {
+
+	ssv := new(extractZipkinIDGeneratorValue)
 	ssv.value = p
-	*ssv.value = val
+	ssv.typ = new(ZipkinIDGenerator)
+	*ssv.typ, *ssv.value = mapZipkinIDGenerator(val)
 	return ssv
 }
 
-func (e extractGeneratorValue) Type() string {
+func (e extractZipkinIDGeneratorValue) Type() string {
 	return "zipkinIDGenerator"
 }
 
-func (e extractGeneratorValue) String() (result string) {
-	var policy = map[generator]string{
-		Random64: "ExtractFailurePolicyRestart",
-		Random128: "ExtractFailurePolicyError",
-		RandomTimestamped: "ExtractFailurePolicyTagAndRestart",
-	}
-	return fmt.Sprintf("error handling policy: %s", policy[*e.typ])
+func (e extractZipkinIDGeneratorValue) String() (result string) {
+	return fmt.Sprintf("%d", *e.typ)
 }
 
-func (e *extractGeneratorValue) Set(val string) (err error)  {
+func (e *extractZipkinIDGeneratorValue) Set(val string) (err error)  {
 	value := strings.ToLower(dashBlankReplacer.Replace(val))
 	if strings.Contains(value, "64") {
 		*e.value = idgenerator.NewRandom64()
@@ -54,29 +64,29 @@ func (e *extractGeneratorValue) Set(val string) (err error)  {
 		return nil
 	} else if strings.Contains(value, "timestamp") {
 		*e.value = idgenerator.NewRandomTimestamped()
-		*e.typ=RandomTimestamped
+		*e.typ= RandomTimestamped
 		return nil
 	} else {
 		return errors.New("unsupported zipkin id generator")
 	}
 }
 
-func extractGeneratorConv(val string) (interface{}, error) {
-	value := strings.ToLower(dashBlankReplacer.Replace(val))
-	if strings.Contains(value, "64") {
+func zipkinZipkinIDGeneratorConv(val string) (interface{}, error) {
+	switch val {
+	case "0":
 		return idgenerator.NewRandom64(), nil
-	} else if strings.Contains(value, "128") {
+	case "1":
 		return idgenerator.NewRandom128(), nil
-	} else if strings.Contains(value, "timestamp") {
+	case "2":
 		return idgenerator.NewRandomTimestamped(), nil
-	} else {
-		return nil, fmt.Errorf("%s: %s", errGeneratorStr, val)
+	default:
+		return nil, fmt.Errorf("%s: %s", errZipkinZipkinIDGeneratorStr, val)
 	}
 }
 
 // GetZipkinIDGenerator return the idgenerator.IDGenerator value of a flag with the given name
 func (f *FlagSet) GetZipkinIDGenerator(name string) (idgenerator.IDGenerator, error) {
-	val, err := f.getFlagType(name, "zipkinIDGenerator", extractGeneratorConv)
+	val, err := f.getFlagType(name, "zipkinIDGenerator", zipkinZipkinIDGeneratorConv)
 	if err != nil {
 		return nil, err
 	}
@@ -85,19 +95,19 @@ func (f *FlagSet) GetZipkinIDGenerator(name string) (idgenerator.IDGenerator, er
 
 // ZipkinIDGeneratorVar defines a idgenerator.IDGenerator flag with specified name, default value, and usage string.
 // The argument p points to a uint variable in which to store the value of the flag.
-func (f *FlagSet) ZipkinIDGeneratorVar(p *idgenerator.IDGenerator, name string, value idgenerator.IDGenerator, usage string) {
-	f.fs.VarP(newZipkinGeneratorValue(value, p), name, "", usage)
+func (f *FlagSet) ZipkinIDGeneratorVar(p *idgenerator.IDGenerator, name string, value ZipkinIDGenerator, usage string) {
+	f.fs.VarP(newZipkinZipkinIDGeneratorValue(value, p), name, "", usage)
 }
 
 // ZipkinIDGeneratorVarP is like ZipkinIDGeneratorVarVar, but accepts a shorthand letter that can be used after a single dash.
-func (f *FlagSet) ZipkinIDGeneratorVarP(p *idgenerator.IDGenerator, name, shorthand string, value idgenerator.IDGenerator, usage string) {
-	f.fs.VarP(newZipkinGeneratorValue(value, p), name, shorthand, usage)
+func (f *FlagSet) ZipkinIDGeneratorVarP(p *idgenerator.IDGenerator, name, shorthand string, value ZipkinIDGenerator, usage string) {
+	f.fs.VarP(newZipkinZipkinIDGeneratorValue(value, p), name, shorthand, usage)
 }
 
 
-// ZipkinExtractFailurePolicy defines a zipkin.ExtractFailurePolicy flag with specified name, default value, and usage string.
+// ZipkinExtractFailurePolicy defines a ExtractFailurePolicy flag with specified name, default value, and usage string.
 // The return value is the address of a uint  variable that stores the value of the flag.
-func (f *FlagSet) ZipkinIDGenerator(name string, value idgenerator.IDGenerator, usage string) *idgenerator.IDGenerator {
+func (f *FlagSet) ZipkinIDGenerator(name string, value ZipkinIDGenerator, usage string) *idgenerator.IDGenerator {
 	p := new(idgenerator.IDGenerator)
 	f.ZipkinIDGeneratorVarP(p, name, "", value, usage)
 	return p
@@ -105,7 +115,7 @@ func (f *FlagSet) ZipkinIDGenerator(name string, value idgenerator.IDGenerator, 
 
 
 // ZipkinExtractFailurePolicyP is like ZipkinExtractFailurePolicy, but accepts a shorthand letter that can be used after a single dash.
-func (f *FlagSet) ZipkinIDGeneratorP(name, shorthand string, value idgenerator.IDGenerator, usage string) *idgenerator.IDGenerator {
+func (f *FlagSet) ZipkinIDGeneratorP(name, shorthand string, value ZipkinIDGenerator, usage string) *idgenerator.IDGenerator {
 	p := new(idgenerator.IDGenerator)
 	f.ZipkinIDGeneratorVarP(p, name, shorthand, value, usage)
 	return p
