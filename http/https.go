@@ -3,11 +3,13 @@ package http
 import (
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
 	"github.com/ALiuGuanyan/micro-boot/internal/utils"
+	"strconv"
 	"time"
 )
 
 var (
 	defaultHTTPSPrefix = "https"
+	defaultHTTPSName = ""
 	defaultHTTPSRunnable = false
 	defaultHTTPSPort = "8043"
 	defaultHTTPSReadTimeout = 15 * time.Second
@@ -19,6 +21,10 @@ var (
 
 func SetDefaultHTTPSFlagsPrefix(prefix string)  {
 	defaultHTTPSPrefix = prefix
+}
+
+func SetDefaultHTTPSName(name string)  {
+	defaultHTTPSName = name
 }
 
 func SetDefaultHTTPSRunnable(b bool)  {
@@ -50,7 +56,7 @@ func SetDefaultHTTPSMaxHeaderBytes(val int)  {
 }
 
 type HTTPS struct {
-
+	Name string `json:"name" yaml:"name"`
 	Runnable          bool          `json:"runnable" yaml:"runnable"`
 	Port  string `json:"port" yaml:"port"`
 	ReadTimeout time.Duration `json:"read-timeout" yaml:"read-timeout"`
@@ -69,15 +75,27 @@ type HTTPS struct {
 	CustomParseFunc func() (err error) `json:"-" yaml:"-"`
 }
 
+func (https *HTTPS) GetIntPort() (port int) {
+	var port64 int64
+	port64, _ = strconv.ParseInt(https.Port, 10, 64)
+	return int(port64)
+}
+
 func (https *HTTPS) BindFlags(fs *bootflag.FlagSet)  {
 	if https.CustomBindFlagsFunc != nil {
 		https.CustomBindFlagsFunc(fs)
 		return
 	}
-	
+
+	fs.StringVar(
+		&https.Name,
+		utils.BuildFlagName(defaultHTTPSPrefix, "name"),
+		defaultHTTPSName,
+		"set the https service name")
+
 	fs.BoolVar(&https.Runnable, utils.BuildFlagName(defaultHTTPSPrefix, "runnable"), defaultHTTPSRunnable, "run HTTPS server or not (default is false)")
 
-	fs.StringVar(&https.Port,  utils.BuildFlagName(defaultHTTPSPrefix, "port"), defaultHTTPSPort, `HTTPS server listening port` )
+	fs.IPv4PortStringVar(&https.Port,  utils.BuildFlagName(defaultHTTPSPrefix, "port"), defaultHTTPSPort, `HTTPS server listening port` )
 
 	fs.DurationVar(&https.ReadTimeout, utils.BuildFlagName(defaultHTTPSPrefix,"read-timeout"), defaultHTTPSReadTimeout, "the maximum duration for reading the entire request, including the body")
 

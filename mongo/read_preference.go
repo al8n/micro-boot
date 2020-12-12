@@ -1,11 +1,11 @@
 package mongo
 
 import (
-	"fmt"
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
 	"github.com/ALiuGuanyan/micro-boot/internal/utils"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/tag"
+	"sync"
 	"time"
 )
 
@@ -18,10 +18,10 @@ const (
 
 var (
 	defaultReadPrefFlagsPrefix = defaultMongoFlagsPrefix + "-read-pref"
-	defaultMaxStaleness = -1 * time.Millisecond
+	defaultMaxStaleness = 10 * time.Second
 	defaultHedgeEnabled = false
 	defaultTagSets = []tag.Set{}
-	defaultReadPrefMode readpref.Mode = 0
+	defaultReadPrefMode = readpref.PrimaryMode
 )
 
 func SetDefaultReadPrefFlagsPrefix(val string)  {
@@ -59,6 +59,7 @@ type ReadPref struct {
 
 	standardized bool
 	srp         *readpref.ReadPref
+	once sync.Once
 }
 
 func (rp *ReadPref) BindFlags(fs *bootflag.FlagSet) {
@@ -96,29 +97,38 @@ func (rp *ReadPref) Get() (srp *readpref.ReadPref, err error) {
 }
 
 func (rp *ReadPref) Standardize() (srp *readpref.ReadPref, err error) {
-	if rp.Mode < 1 || rp.Mode > 5 {
-		return nil, fmt.Errorf("no valid read preference mode is provided")
-	}
+	rp.once.Do(func() {
+		switch rp.Mode {
+		case readpref.PrimaryMode:
+			rp.srp = readpref.Primary()
+			rp.standardized = true
+		case readpref.PrimaryPreferredMode:
+			rp.srp = readpref.PrimaryPreferred(
+				readpref.WithHedgeEnabled(rp.HedgeEnabled),
+				readpref.WithTagSets(rp.TagSets...),
+				readpref.WithMaxStaleness(rp.MaxStaleness))
+			rp.standardized = true
+		case readpref.SecondaryMode:
+			rp.srp = readpref.Secondary(
+				readpref.WithHedgeEnabled(rp.HedgeEnabled),
+				readpref.WithTagSets(rp.TagSets...),
+				readpref.WithMaxStaleness(rp.MaxStaleness))
+			rp.standardized = true
+		case readpref.SecondaryPreferredMode:
+			rp.srp = readpref.SecondaryPreferred(
+				readpref.WithHedgeEnabled(rp.HedgeEnabled),
+				readpref.WithTagSets(rp.TagSets...),
+				readpref.WithMaxStaleness(rp.MaxStaleness))
+			rp.standardized = true
+		case readpref.NearestMode:
+			rp.srp = readpref.Nearest(
+				readpref.WithHedgeEnabled(rp.HedgeEnabled),
+				readpref.WithTagSets(rp.TagSets...),
+				readpref.WithMaxStaleness(rp.MaxStaleness))
+			rp.standardized = true
+		}
+	})
 
-	var opts []readpref.Option
 
-	if rp.MaxStaleness != -1 * time.Millisecond {
-		opts = append(opts, readpref.WithMaxStaleness(rp.MaxStaleness))
-	}
-
-	if len(rp.TagSets) > 0 {
-		opts = append(opts, readpref.WithTagSets(rp.TagSets...))
-	}
-
-	if rp.HedgeEnabled {
-		opts = append(opts, readpref.WithHedgeEnabled(rp.HedgeEnabled))
-	}
-	srp, err = readpref.New(rp.Mode, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	rp.standardized = true
-	rp.srp = srp
-	return
+	return rp.srp, nil
 }

@@ -88,10 +88,16 @@ func SetDefaultLogFileFlagShortHand(val string)  {
 	defaultLogFileFlagShortHand = val
 }
 
-func newStartCmd(rootName string, fs *bootflag.FlagSet, config *Config, options ...Option) (cmd *Command){
+func newStartCmd(rootName string, fs *bootflag.FlagSet, config *Config) (cmd *Command) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return nil
+	}
+
 	var (
 		shortUsage = fmt.Sprintf("%s start [flags]", rootName)
 		shortHelp, longHelp string
+		opts = []Option{WithEnvVarNoPrefix(), WithAllowMissingConfigFile(true), WithConfigFile(filepath.Join(pwd, root.configFile)), WithConfigFileParser(configParser)}
 	)
 
 	if config != nil {
@@ -100,6 +106,9 @@ func newStartCmd(rootName string, fs *bootflag.FlagSet, config *Config, options 
 			root.start.BindFlags(fs)
 		}
 
+		if len(config.Options) > 0 {
+			opts = config.Options
+		}
 
 		if strings.TrimSpace(config.ShortUsage) != "" {
 			shortUsage = config.ShortUsage
@@ -119,7 +128,7 @@ func newStartCmd(rootName string, fs *bootflag.FlagSet, config *Config, options 
 		ShortUsage: shortUsage,
 		ShortHelp: shortHelp,
 		LongHelp: longHelp,
-		Options: options,
+		Options: opts,
 		FlagSet:  fs,
 		Exec: func(ctx context.Context, args []string) (err error) {
 			if ls.daemon {
@@ -166,10 +175,18 @@ func newStartCmd(rootName string, fs *bootflag.FlagSet, config *Config, options 
 				return nil
 			}
 
-			logStartInfo(rootName, root.logFile, root.configFile)
+
+			pwd, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+
+			fcfgFile := filepath.Join(pwd,root.configFile)
+
+			logStartInfo(rootName, root.logFile, fcfgFile)
 
 			if root.start != nil {
-				err = root.start.Initialize(root.configFile)
+				err = root.start.Initialize(fcfgFile)
 				if err != nil {
 					return err
 				}
@@ -228,12 +245,13 @@ func newRunCmd(name string, fs *bootflag.FlagSet, options ...Option) (cmd *Comma
 				return nil
 			}
 
-			logStartInfo(name, root.logFile, root.configFile)
+
+			fcfgPath := filepath.Join(abs,root.configFile)
+			logStartInfo(name, root.logFile, fcfgPath)
 
 			logrus.SetOutput(lf)
-
 			if root.start != nil {
-				err = root.start.Initialize(root.configFile)
+				err = root.start.Initialize(fcfgPath)
 				if err != nil {
 					return err
 				}

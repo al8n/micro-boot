@@ -19,10 +19,10 @@ var (
 
 	defaultAPILogKVs = map[string]string{}
 
-	defaultAPIRateLimitDelta uint = 1000
+	defaultAPIRateLimitDelta = 1000
 	defaultAPIRateLimitDuration = time.Second
 
-	defaultAPIBreakerMaxRequests uint = 1
+	defaultAPIBreakerMaxRequests uint32 = 1
 	defaultAPIBreakerTimeout = 60 * time.Second
 	defaultAPIBreakerInterval time.Duration = 0
 )
@@ -43,7 +43,7 @@ func SetDefaultAPILogKVs(logkvs map[string]string)  {
 	defaultAPILogKVs = logkvs
 }
 
-func SetDefaultAPIRateLimitDelta(val uint)  {
+func SetDefaultAPIRateLimitDelta(val int)  {
 	defaultAPIRateLimitDelta = val
 }
 
@@ -51,8 +51,8 @@ func SetDefaultAPIRateLimitDuration(val time.Duration)  {
 	defaultAPIRateLimitDuration = val
 }
 
-func SetDefaultAPIBreakerMaxRequests(val uint)  {
-	defaultAPIRateLimitDelta = val
+func SetDefaultAPIBreakerMaxRequests(val uint32)  {
+	defaultAPIBreakerMaxRequests = val
 }
 
 func SetDefaultAPIBreakerTimeout(val time.Duration)  {
@@ -64,9 +64,11 @@ func SetDefaultAPIBreakerInterval(val time.Duration)  {
 }
 
 type RateLimit struct {
-	Delta    uint   `json:"delta" yaml:"delta"`
+	Delta    int   `json:"delta" yaml:"delta"`
 	Duration time.Duration `json:"duration" yaml:"duration"`
 	CustomBindFlagsFunc func(fs *bootflag.FlagSet) `json:"-" yaml:"-"`
+	// CustomParseFunc defines custom parse behaviour for structure, if CustomParseFunc is nil, default parse behaviour will be used
+	CustomParseFunc func() (err error) `json:"-" yaml:"-"`
 }
 
 func (rl *RateLimit) BindFlags(fs *bootflag.FlagSet)  {
@@ -74,7 +76,7 @@ func (rl *RateLimit) BindFlags(fs *bootflag.FlagSet)  {
 		rl.CustomBindFlagsFunc(fs)
 		return
 	}
-	fs.UintVar(
+	fs.IntVar(
 		&rl.Delta,
 		utils.BuildFlagName(defaultAPIRateLimitFlagsPrefix,"delta"),
 		defaultAPIRateLimitDelta,
@@ -88,21 +90,26 @@ func (rl *RateLimit) BindFlags(fs *bootflag.FlagSet)  {
 }
 
 func (rl RateLimit) Parse() (err error) {
+	if rl.CustomParseFunc != nil {
+		return rl.CustomParseFunc()
+	}
 	return nil
 }
 
 type Breaker struct {
 	Name        string        `json:"name" yaml:"name"`
-	MaxRequests uint        `json:"max" yaml:"max"`
+	MaxRequests uint32        `json:"max" yaml:"max"`
 	Interval    time.Duration `json:"interval" yaml:"interval"`
 	Timeout     time.Duration  `json:"timeout" yaml:"timeout"`
 	CustomBindFlagsFunc func(fs *bootflag.FlagSet) `json:"-" yaml:"-"`
+	// CustomParseFunc defines custom parse behaviour for structure, if CustomParseFunc is nil, default parse behaviour will be used
+	CustomParseFunc func() (err error) `json:"-" yaml:"-"`
 }
 
-func (b Breaker) Standardize() gobreaker.Settings {
+func (b *Breaker) Standardize() gobreaker.Settings {
 	return gobreaker.Settings{
 		Name:          b.Name,
-		MaxRequests:   uint32(b.MaxRequests),
+		MaxRequests:   b.MaxRequests,
 		Interval:      b.Interval,
 		Timeout:       b.Timeout,
 	}
@@ -114,12 +121,15 @@ func (b *Breaker) BindFlags(fs *bootflag.FlagSet)  {
 	}
 
 	fs.StringVar(&b.Name, utils.BuildFlagName(defaultAPIBreakerFlagsPrefix, "name"), "", "the name of the CircuitBreaker")
-	fs.UintVar(&b.MaxRequests,utils.BuildFlagName(defaultAPIBreakerFlagsPrefix,"max-requests"), defaultAPIBreakerMaxRequests, "the maximum number of requests allowed to pass through when the CircuitBreaker is half-open.")
+	fs.Uint32Var(&b.MaxRequests,utils.BuildFlagName(defaultAPIBreakerFlagsPrefix,"max-requests"), defaultAPIBreakerMaxRequests, "the maximum number of requests allowed to pass through when the CircuitBreaker is half-open.")
 	fs.DurationVar(&b.Interval,utils.BuildFlagName(defaultAPIBreakerFlagsPrefix, "interval"), defaultAPIBreakerInterval, "the cyclic period of the closed state for the CircuitBreaker to clear the internal Counts.")
 	fs.DurationVar(&b.Timeout,utils.BuildFlagName(defaultAPIBreakerFlagsPrefix, "duration"), defaultAPIBreakerTimeout, "the period of the open state, after which the state of the CircuitBreaker becomes half-open.")
 }
 
-func (b Breaker) Parse() (err error) {
+func (b *Breaker) Parse() (err error) {
+	if b.CustomParseFunc != nil {
+		return b.CustomParseFunc()
+	}
 	return nil
 }
 
@@ -136,12 +146,25 @@ func (as *APIs) Parse() (err error) {
 	return nil
 }
 
+type Method uint8
+
+const (
+	GET Method = iota
+	POST
+	DELETE
+	PUT
+	PATCH
+)
+
 type API struct {
 	Name       string            `json:"name" yaml:"name"`
 	LogKVs     map[string]string `json:"log" yaml:"log"`
 	Instrument []string          `json:"instrument" yaml:"instrument"`
 	RateLimit  RateLimit         `json:"ratelimit" yaml:"ratelimit"`
 	Breaker    Breaker           `json:"breaker" yaml:"breaker"`
+
+	Path string `json:"path" yaml:"path"`
+	Method string `json:"method" yaml:"method"`
 
 	// CustomBindFlagsFunc defines custom bind flags behaviour for structure, if CustomBindFlagsFunc is nil, default  bind flags behaviour will be used
 	CustomBindFlagsFunc func(fs *bootflag.FlagSet) `json:"-" yaml:"-"`

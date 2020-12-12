@@ -142,7 +142,7 @@ func SetDefaultSocketTimeout(val time.Duration)  {
 
 type ClientOptions struct {
 	AppName                  string      `json:"app-name" yaml:"app-name"`
-	Auth                     *Credential `json:"auth" yaml:"auth"`
+	Auth                     Credential `json:"auth" yaml:"auth"`
 
 	//AutoEncryptionOptions    *AutoEncryptionOptions  `json:"auto-encryption" yaml:"auto-encryption"`
 
@@ -160,10 +160,10 @@ type ClientOptions struct {
 	MinPoolSize              uint64 			`json:"min-pool-size" yaml:"min-pool-size"`
 
 	// ReadConcern for replica sets and replica set shards determines which data to return from a query.
-	ReadConcern              *ReadConcern `json:"read-concern" yaml:"read-concern"`
+	ReadConcern              ReadConcern `json:"read-concern" yaml:"read-concern"`
 
 	// ReadPreference determines which servers are considered suitable for read operations.
-	ReadPreference           *ReadPref `json:"read-preference" yaml:"read-preference"`
+	ReadPreference           ReadPref `json:"read-preference" yaml:"read-preference"`
 
 	ReplicaSet               string  			`json:"replica-set" yaml:"replica-set"`
 
@@ -336,23 +336,21 @@ func (m *ClientOptions) Parse() (err error) {
 	return nil
 }
 
-func (m ClientOptions) Standardize() (opts *options.ClientOptions, err error) {
+func (m *ClientOptions) Standardize() (opts *options.ClientOptions, err error) {
 	opts = &options.ClientOptions{}
 
 	opts.SetAppName(m.AppName)
 
-	if m.Auth != nil {
-		auth := options.Credential{
-			AuthMechanism:           m.Auth.AuthMechanism,
-			AuthMechanismProperties: m.Auth.AuthMechanismProperties,
-			AuthSource:              m.Auth.AuthSource,
-			Username:                m.Auth.Username,
-			Password:                m.Auth.Password,
-			PasswordSet:             m.Auth.PasswordSet,
-		}
-
-		opts.SetAuth(auth)
+	auth := options.Credential{
+		AuthMechanism:           m.Auth.AuthMechanism,
+		AuthMechanismProperties: m.Auth.AuthMechanismProperties,
+		AuthSource:              m.Auth.AuthSource,
+		Username:                m.Auth.Username,
+		Password:                m.Auth.Password,
+		PasswordSet:             m.Auth.PasswordSet,
 	}
+
+	opts.SetAuth(auth)
 
 	opts.SetCompressors(m.Compressors)
 	opts.SetConnectTimeout(m.ConnectTimeout)
@@ -364,18 +362,13 @@ func (m ClientOptions) Standardize() (opts *options.ClientOptions, err error) {
 	opts.SetMaxConnIdleTime(m.MaxConnIdleTime)
 	opts.SetMaxPoolSize(m.MaxPoolSize)
 	opts.SetMinPoolSize(m.MinPoolSize)
+	opts.SetReadConcern(readconcern.New(readconcern.Level(m.ReadConcern.Level)))
 
-	if m.ReadConcern != nil {
-		opts.SetReadConcern(readconcern.New(readconcern.Level(m.ReadConcern.Level)))
+	pref, err := m.ReadPreference.Standardize()
+	if err != nil {
+		return nil, err
 	}
-
-	if m.ReadPreference != nil {
-		pref, err := m.ReadPreference.Standardize()
-		if err != nil {
-			return nil, err
-		}
-		opts.SetReadPreference(pref)
-	}
+	opts.SetReadPreference(pref)
 
 	opts.SetReplicaSet(m.ReplicaSet)
 	opts.SetRetryReads(m.RetryReads)

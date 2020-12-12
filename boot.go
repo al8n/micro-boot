@@ -44,6 +44,8 @@ type Config struct {
 	LongHelp string
 
 	Configurator Configurator
+
+	Options  []Option
 }
 
 type Configurator interface {

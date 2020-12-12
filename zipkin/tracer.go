@@ -1,7 +1,6 @@
 package zipkin
 
 import (
-	"errors"
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
 	"github.com/ALiuGuanyan/micro-boot/internal/utils"
 	"github.com/openzipkin/zipkin-go"
@@ -93,15 +92,15 @@ type Sampler struct {
 
 	// BoundarySampler is the settings of boundary sampler for
 	// creating a standard zipkin boundary sampler
-	BoundarySampler *BoundarySampler `json:"boundary" yaml:"boundary"`
+	BoundarySampler BoundarySampler `json:"boundary" yaml:"boundary"`
 
 	// ModuloSampler is the settings of modulo sampler for creating a standard zipkin
 	// module sampler
-	ModuloSampler *ModuloSampler `json:"modulo" yaml:"modulo"`
+	ModuloSampler ModuloSampler `json:"modulo" yaml:"modulo"`
 
 	// CountingSampler is the settings of counting sampler for creating a standard zipkin
 	// counting sampler
-	CountingSampler *CountingSampler `json:"counting" yaml:"counting"`
+	CountingSampler CountingSampler `json:"counting" yaml:"counting"`
 }
 
 // Tracer is the settings for Golang official Zipkin client tracer implementation.
@@ -270,9 +269,9 @@ func (t Tracer) WithNeverSampler() zipkin.TracerOption {
 
 // WithBoundarySampler is the same as zipkin.WithSampler(zipkin.NewBoundarySampler(rate, salt)) in official Golang client.
 func (t Tracer) WithBoundarySampler() (zipkin.TracerOption, error) {
-	if t.Sampler.BoundarySampler == nil {
-		return nil, errors.New("no enough parameters provided for boundary sampler")
-	}
+	//if t.Sampler.BoundarySampler == nil {
+	//	return nil, errors.New("no enough parameters provided for boundary sampler")
+	//}
 
 	s, err := zipkin.NewBoundarySampler(t.Sampler.BoundarySampler.Rate, t.Sampler.BoundarySampler.Salt)
 	if err != nil {
@@ -283,17 +282,17 @@ func (t Tracer) WithBoundarySampler() (zipkin.TracerOption, error) {
 
 // WithModuloSampler is the same as zipkin.WithSampler(zipkin.NewModuloSampler(mod)) in official Golang client.
 func (t Tracer) WithModuloSampler() (zipkin.TracerOption, error) {
-	if t.Sampler.ModuloSampler == nil {
-		return nil, errors.New("no enough parameters provided for modulo sampler")
-	}
+	//if t.Sampler.ModuloSampler == nil {
+	//	return nil, errors.New("no enough parameters provided for modulo sampler")
+	//}
 	return zipkin.WithSampler(zipkin.NewModuloSampler(t.Sampler.ModuloSampler.Mod)), nil
 }
 
 // WithCountingSampler is the same as zipkin.WithSampler(zipkin.NewModuloSampler(mod)) in official Golang client.
 func (t Tracer) WithCountingSampler() (zipkin.TracerOption, error ){
-	if t.Sampler.CountingSampler == nil {
-		return nil, errors.New("no enough parameters provided for counting sampler")
-	}
+	//if t.Sampler.CountingSampler == nil {
+	//	return nil, errors.New("no enough parameters provided for counting sampler")
+	//}
 
 	s, err := zipkin.NewCountingSampler(t.Sampler.CountingSampler.Rate)
 	if err != nil {

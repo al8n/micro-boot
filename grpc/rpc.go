@@ -3,6 +3,7 @@ package grpc
 import (
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
 	"github.com/ALiuGuanyan/micro-boot/internal/utils"
+	"strconv"
 )
 
 var (
@@ -23,7 +24,7 @@ func SetDefaultGRPCPort(val string)  {
 }
 
 type GRPC struct {
-	
+	Name string `json:"name" yaml:"name"`
 	Runnable          bool          `json:"runnable" yaml:"runnable"`
 	Port              string        `json:"port" yaml:"port"`
 
@@ -48,13 +49,37 @@ type GRPC struct {
 	//NumServerWorkers      uint32 `json:"num-server-workers" yaml:"num-server-workers"`
 }
 
+func (r *GRPC) GetIntPort() (port int) {
+	var port64 int64
+	port64, _ = strconv.ParseInt(r.Port, 10, 64)
+	return int(port64)
+}
+
 func (r *GRPC) BindFlags(fs *bootflag.FlagSet)  {
-	if r.CustomBindFlagsFunc == nil {
-		fs.BoolVarP(&r.Runnable,utils.BuildFlagName(defaultGRPCFlagsPrefix, "runnable"),"r", defaultGRPCRunnable, "run GRPC server or not (default is true)")
-		fs.StringVar(&r.Port, utils.BuildFlagName(defaultGRPCFlagsPrefix,"port"), defaultGRPCPort, "GRPC listen port")
+	if r.CustomBindFlagsFunc != nil {
+		r.CustomBindFlagsFunc(fs)
 		return
 	}
-	r.CustomBindFlagsFunc(fs)
+
+	fs.StringVar(
+		&r.Name,
+		utils.BuildFlagName(defaultGRPCFlagsPrefix, "name"),
+		"",
+		"set the grpc service name")
+
+	fs.BoolVar(
+		&r.Runnable,
+		utils.BuildFlagName(defaultGRPCFlagsPrefix, "runnable"),
+		defaultGRPCRunnable,
+		"run GRPC server or not (default is true)")
+
+
+	fs.IPv4PortStringVar(
+		&r.Port,
+		utils.BuildFlagName(defaultGRPCFlagsPrefix,"port"),
+		defaultGRPCPort,
+		"GRPC listen port")
+
 }
 
 func (r *GRPC) Parse() (err error) {

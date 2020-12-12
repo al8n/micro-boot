@@ -16,6 +16,7 @@ import (
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
 	"github.com/ALiuGuanyan/micro-boot/internal/utils"
 	"github.com/openzipkin/zipkin-go"
+	"github.com/openzipkin/zipkin-go/reporter"
 )
 
 var (
@@ -115,4 +116,8 @@ func (c Config) WithSharedSpans() zipkin.TracerOption {
 // if the trace is not sampled.
 func (c Config) WithNoopSpan() zipkin.TracerOption {
 	return c.Tracer.WithNoopSpan()
+}
+
+func (c Config) StandardReporter() reporter.Reporter {
+	return c.Reporter.Standardize()
 }

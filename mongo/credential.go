@@ -9,7 +9,7 @@ var (
 	defaultCredentialPrefix = defaultMongoFlagsPrefix + "-auth"
 	defaultAuthMechanism = ""
 	defaultAuthMechanismProperties = make(map[string]string)
-	defaultAuthSource = ""
+	defaultAuthSource = "admin"
 	defaultUsername = ""
 	defaultPassword = ""
 	defaultPasswordSet = false
@@ -56,12 +56,12 @@ func SetDefaultAuthPasswordSet (val bool)  {
 //
 // See official go-mongo-driver doc https://godoc.org/go.mongodb.org/mongo-driver/mongo/options#Credential for details.
 type Credential struct {
-	AuthMechanism           string               `json:"auth-mechanism" yaml:"auth-mechanism"`
-	AuthMechanismProperties map[string]string    `json:"auth-mechanism-properties" yaml:"auth-mechanism-properties"`
-	AuthSource              string				`json:"auth-source" yaml:"auth-source"`
-	Username                string              `json:"auth-username" yaml:"auth-username"`
-	Password                string              `json:"auth-password" yaml:"auth-password"`
-	PasswordSet             bool                `json:"auth-password-set" yaml:"auth-password-set"`
+	AuthMechanism           string               `json:"mechanism" yaml:"mechanism"`
+	AuthMechanismProperties map[string]string    `json:"mechanism-properties" yaml:"mechanism-properties"`
+	AuthSource              string				`json:"source" yaml:"source"`
+	Username                string              `json:"username" yaml:"username"`
+	Password                string              `json:"password" yaml:"password"`
+	PasswordSet             bool                `json:"password-set" yaml:"password-set"`
 
 	// CustomBindFlagsFunc defines custom bind flags behaviour for structure, if CustomBindFlagsFunc is nil, default  bind flags behaviour will be used
 	CustomBindFlagsFunc func(fs *bootflag.FlagSet) `json:"-" yaml:"-"`

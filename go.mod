@@ -6,7 +6,9 @@ require (
 	github.com/gin-contrib/timeout v0.0.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/golang/protobuf v1.4.3
+	github.com/hashicorp/consul/api v1.8.1
 	github.com/imdario/mergo v0.3.11 // indirect
+	github.com/mitchellh/mapstructure v1.4.0
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/openzipkin/zipkin-go v0.2.5
 	github.com/prometheus/client_golang v0.9.3

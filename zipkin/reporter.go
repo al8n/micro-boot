@@ -3,6 +3,8 @@ package zipkin
 import (
 	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
 	"github.com/ALiuGuanyan/micro-boot/internal/utils"
+	"github.com/openzipkin/zipkin-go/reporter"
+	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 	httpreporter "github.com/openzipkin/zipkin-go/reporter/http"
 	"time"
 )
@@ -104,4 +106,8 @@ func(r Reporter) WithMaxBacklog() httpreporter.ReporterOption {
 // emitting them to the collector. The default batch interval is 1 second.
 func(r Reporter) WithBatchInterval() httpreporter.ReporterOption {
 	return httpreporter.BatchInterval(r.BatchInterval)
+}
+
+func (r Reporter) Standardize() reporter.Reporter {
+	return zipkinhttp.NewReporter(r.URL, r.WithTimeout(), r.WithBatchInterval(), r.WithBatchSize(), r.WithMaxBacklog())
 }

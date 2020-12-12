@@ -87,7 +87,7 @@ func constructDaemonCmd(name string, config Root)  {
 			false,
 			"run service in daemon mode")
 
-		startCmd = newStartCmd(name, daemonFlagSet, config.Start, config.Options...)
+		startCmd = newStartCmd(name, daemonFlagSet, config.Start)
 
 		runCmd = newRunCmd(name, daemonFlagSet, config.Options...)
 
@@ -109,7 +109,7 @@ func constructRootCmd(name string, server Booter, config Root) (err error) {
 
 		shortHelp, longHelp string
 
-		options = []Option{WithEnvVarNoPrefix()}
+		options = []Option{WithEnvVarNoPrefix(), WithAllowMissingConfigFile(true), WithConfigFile(root.configFile), WithConfigFileParser(configParser)}
 	)
 	{
 		if strings.TrimSpace(config.LongHelp) != "" {
