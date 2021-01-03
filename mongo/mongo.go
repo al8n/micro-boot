@@ -341,16 +341,19 @@ func (m *ClientOptions) Standardize() (opts *options.ClientOptions, err error) {
 
 	opts.SetAppName(m.AppName)
 
-	auth := options.Credential{
-		AuthMechanism:           m.Auth.AuthMechanism,
-		AuthMechanismProperties: m.Auth.AuthMechanismProperties,
-		AuthSource:              m.Auth.AuthSource,
-		Username:                m.Auth.Username,
-		Password:                m.Auth.Password,
-		PasswordSet:             m.Auth.PasswordSet,
+	if m.Auth.Username != "" && m.Auth.Password != "" {
+		auth := options.Credential{
+			AuthMechanism:           m.Auth.AuthMechanism,
+			AuthMechanismProperties: m.Auth.AuthMechanismProperties,
+			AuthSource:              m.Auth.AuthSource,
+			Username:                m.Auth.Username,
+			Password:                m.Auth.Password,
+			PasswordSet:             m.Auth.PasswordSet,
+		}
+
+		opts.SetAuth(auth)
 	}
 
-	opts.SetAuth(auth)
 
 	opts.SetCompressors(m.Compressors)
 	opts.SetConnectTimeout(m.ConnectTimeout)

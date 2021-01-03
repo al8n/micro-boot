@@ -11,7 +11,7 @@ var (
 	defaultHTTPSPrefix = "https"
 	defaultHTTPSName = ""
 	defaultHTTPSRunnable = false
-	defaultHTTPSPort = "8043"
+	defaultHTTPSPort = ""
 	defaultHTTPSReadTimeout = 15 * time.Second
 	defaultHTTPSReadHeaderTimeout = 15 * time.Second
 	defaultHTTPSWriteTimeout = 15 * time.Second

@@ -11,7 +11,7 @@ var (
 	defaultHTTPPrefix = "http"
 	defaultHTTPName = ""
 	defaultHTTPRunnable = true
-	defaultHTTPPort = "8080"
+	defaultHTTPPort = ""
 	defaultHTTPReadTimeout = 15 * time.Second
 	defaultHTTPReadHeaderTimeout = 15 * time.Second
 	defaultHTTPWriteTimeout = 15 * time.Second

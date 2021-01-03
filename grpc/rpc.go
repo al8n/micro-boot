@@ -9,7 +9,7 @@ import (
 var (
 	defaultGRPCFlagsPrefix = "rpc"
 	defaultGRPCRunnable = true
-	defaultGRPCPort = "50051")
+	defaultGRPCPort = "")
 
 func SetDefaultGRPCFlagsPrefix(val string)  {
 	defaultGRPCFlagsPrefix = val

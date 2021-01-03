@@ -9,7 +9,7 @@ import (
 
 var (
 	defaultClientFlagsPrefix = defaultConsulFlagsPrefix + "-client"
-	defaultAddress = "127.0.0.1:8500"
+	defaultAddress = ""
 	defaultScheme = "http"
 	defaultDatacenter = ""
 	defaultAuthUsername = ""
