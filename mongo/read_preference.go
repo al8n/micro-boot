@@ -1,8 +1,8 @@
 package mongo
 
 import (
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
-	"github.com/ALiuGuanyan/micro-boot/internal/utils"
+	bootflag "github.com/al8n/micro-boot/flag"
+	"github.com/al8n/micro-boot/internal/utils"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/tag"
 	"sync"

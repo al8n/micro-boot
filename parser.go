@@ -3,10 +3,10 @@ package boot
 import (
 	"bufio"
 	"fmt"
+	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 	"io"
 	"strings"
-	"github.com/mitchellh/mapstructure"
 )
 
 // PlainParser is a parser for config files in an extremely simple format. Each

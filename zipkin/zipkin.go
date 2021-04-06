@@ -13,8 +13,8 @@
 package zipkin
 
 import (
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
-	"github.com/ALiuGuanyan/micro-boot/internal/utils"
+	bootflag "github.com/al8n/micro-boot/flag"
+	"github.com/al8n/micro-boot/internal/utils"
 	"github.com/openzipkin/zipkin-go"
 	"github.com/openzipkin/zipkin-go/reporter"
 )

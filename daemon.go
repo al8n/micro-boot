@@ -3,7 +3,7 @@ package boot
 import (
 	"context"
 	"fmt"
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
+	bootflag "github.com/al8n/micro-boot/flag"
 	"github.com/sirupsen/logrus"
 	"os"
 	"os/exec"

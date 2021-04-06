@@ -2,7 +2,7 @@ package boot
 
 import (
 	"context"
-	"github.com/ALiuGuanyan/micro-boot/flag"
+	"github.com/al8n/micro-boot/flag"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"os"

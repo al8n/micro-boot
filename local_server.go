@@ -2,7 +2,7 @@ package boot
 
 import (
 	"fmt"
-	localrpc "github.com/ALiuGuanyan/micro-boot/internal/rpc"
+	localrpc "github.com/al8n/micro-boot/internal/rpc"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"

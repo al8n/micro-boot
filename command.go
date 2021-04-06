@@ -6,7 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
+	bootflag "github.com/al8n/micro-boot/flag"
 	"github.com/spf13/pflag"
 	"io"
 	"os"

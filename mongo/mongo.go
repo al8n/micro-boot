@@ -2,8 +2,8 @@ package mongo
 
 import (
 	"fmt"
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
-	"github.com/ALiuGuanyan/micro-boot/internal/utils"
+	bootflag "github.com/al8n/micro-boot/flag"
+	"github.com/al8n/micro-boot/internal/utils"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readconcern"
 	"go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
@@ -341,14 +341,26 @@ func (m *ClientOptions) Standardize() (opts *options.ClientOptions, err error) {
 
 	opts.SetAppName(m.AppName)
 
+
+
 	if m.Auth.Username != "" && m.Auth.Password != "" {
+
 		auth := options.Credential{
-			AuthMechanism:           m.Auth.AuthMechanism,
-			AuthMechanismProperties: m.Auth.AuthMechanismProperties,
-			AuthSource:              m.Auth.AuthSource,
 			Username:                m.Auth.Username,
 			Password:                m.Auth.Password,
 			PasswordSet:             m.Auth.PasswordSet,
+		}
+
+		if m.Auth.AuthMechanism != "" {
+			auth.AuthMechanism = m.Auth.AuthMechanism
+		}
+
+		if m.Auth.AuthMechanismProperties != nil {
+			auth.AuthMechanismProperties = m.Auth.AuthMechanismProperties
+		}
+
+		if m.Auth.AuthSource != "" {
+			auth.AuthSource = m.Auth.AuthSource
 		}
 
 		opts.SetAuth(auth)

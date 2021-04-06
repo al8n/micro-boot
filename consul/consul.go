@@ -1,6 +1,6 @@
 package consul
 
-import bootflag "github.com/ALiuGuanyan/micro-boot/flag"
+import bootflag "github.com/al8n/micro-boot/flag"
 
 var (
 	defaultConsulFlagsPrefix = "consul"

@@ -3,8 +3,8 @@ package prometheus
 import (
 	"errors"
 	"fmt"
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
-	"github.com/ALiuGuanyan/micro-boot/internal/utils"
+	bootflag "github.com/al8n/micro-boot/flag"
+	"github.com/al8n/micro-boot/internal/utils"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"time"
