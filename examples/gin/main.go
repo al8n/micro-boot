@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	boot "github.com/ALiuGuanyan/micro-boot"
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
-	"github.com/ALiuGuanyan/micro-boot/http"
+	boot "github.com/al8n/micro-boot"
+	bootflag "github.com/al8n/micro-boot/flag"
+	"github.com/al8n/micro-boot/http"
 	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 	"log"
