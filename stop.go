@@ -3,8 +3,8 @@ package boot
 import (
 	"context"
 	"fmt"
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
-	localrpc "github.com/ALiuGuanyan/micro-boot/internal/rpc"
+	bootflag "github.com/al8n/micro-boot/flag"
+	localrpc "github.com/al8n/micro-boot/internal/rpc"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"

@@ -3,7 +3,7 @@ package boot
 import (
 	"context"
 	"fmt"
-	bootflag "github.com/ALiuGuanyan/micro-boot/flag"
+	bootflag "github.com/al8n/micro-boot/flag"
 	"google.golang.org/grpc"
 	"os"
 	"path/filepath"
