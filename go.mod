@@ -6,6 +6,7 @@ require (
 	github.com/gin-contrib/timeout v0.0.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis/v8 v8.4.4 // indirect
+	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/golang/protobuf v1.4.3
 	github.com/hashicorp/consul/api v1.8.1
 	github.com/imdario/mergo v0.3.11 // indirect
