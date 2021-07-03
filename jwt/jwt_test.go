@@ -4,20 +4,35 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"testing"
+	"time"
 )
 
+const key = "asdbasduiaus"
+
+func keyFunc(token *jwt.Token) (interface{}, error) {
+	return []byte(key), nil
+}
+
 func TestSignMethod(t *testing.T) {
-	method := jwt.GetSigningMethod("ES256")
-	method = jwt.GetSigningMethod("ES384")
-	method = jwt.GetSigningMethod("ES512")
-	method = jwt.GetSigningMethod("HS256")
-	method = jwt.GetSigningMethod("HS384")
-	method = jwt.GetSigningMethod("HS512")
-	method = jwt.GetSigningMethod("RS256")
-	method = jwt.GetSigningMethod("RS384")
-	method = jwt.GetSigningMethod("RS512")
-	method = jwt.GetSigningMethod("PS256")
-	method = jwt.GetSigningMethod("PS384")
-	method = jwt.GetSigningMethod("PS512")
-	fmt.Println(method.Alg())
+	cfg := Config{
+		Audience:            "test",
+		Issuer:              "test",
+		Expiration:          2 * time.Second,
+		PrivateKey:          key,
+		Method:              "HS256",
+	}
+
+	claims := cfg.Standardize()
+	fmt.Println(claims)
+	rawToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	token, err := rawToken.SignedString([]byte(key))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = jwt.ParseWithClaims(token, jwt.MapClaims{}, keyFunc)
+	if err != nil {
+		t.Fatal(err)
+	}
 }

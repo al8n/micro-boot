@@ -37,7 +37,7 @@ var (
 	defaultPublicKeyUsage = "set the public key to generate JWT token, if public key file is not provided. Otherwise, overwritten by public key file content"
 	defaultPublicKeyFile = ""
 	defaultPublicKeyFileUsage = "set the public key file to generate JWT token"
-	defaultMethod = ""
+	defaultMethod = "HS256"
 	defaultMethodUsage = "set the algorithm to sign the JWT token"
 )
 
@@ -156,7 +156,7 @@ func (c *Config)  SetSubject(sub string) {
 
 func (c Config) Standardize() (claims jwt.StandardClaims) {
 	var (
-		now time.Time
+		now = time.Now()
 	)
 
 	claims = jwt.StandardClaims{}
@@ -175,6 +175,8 @@ func (c Config) Standardize() (claims jwt.StandardClaims) {
 
 	if c.NotBefore != 0 {
 		claims.NotBefore = c.NotBefore
+	} else {
+		claims.NotBefore = now.Unix()
 	}
 
 	if c.Subject != "" {
